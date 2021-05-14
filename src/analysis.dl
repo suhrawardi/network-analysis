@@ -1,0 +1,27 @@
+.type X = symbol
+.type Y = symbol
+
+.decl Max(i:number)
+.decl Iter(i:number)
+.decl Node(x:X, s:number)
+.decl Edge(x:X, y:Y) choice-domain (x, y)
+.decl Transformation(x:X, i:number, ct:number, cs:number)
+.decl Out(x:X, xs:number)
+
+.input Node(IO=file, filename="nodes.csv", delimiter=",")
+.input Edge(IO=file, filename="edges.csv", delimiter=",")
+.output Out(IO=file, filename="out.csv", delimiter=",")
+
+Max(4).
+
+Iter(1).
+Iter(i) :- Iter(i), Transformation(x, i, ct, _), ct <= count : { Edge(x, _) }.
+Iter(i + 1) :- Max(m), Iter(i), i < m.
+
+Transformation(x, i, 1, s) :- Iter(i), Edge(x, y), Node(y, s).
+Transformation(x, i, (ct + 1), (cs + s)) :- Iter(i), Edge(x, y), Node(y, s), Transformation(x, i, ct, cs).
+
+Node(x, s) :- Transformation(x, _, i, si), s = i - si.
+
+Out(x, s) :- Node(x, s).
+
