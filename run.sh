@@ -7,4 +7,14 @@
 
 souffle -o analysis ./src/analysis.dl
 
+cp ./input/nodes.csv ./input/nodes-intermediate.csv
+
+for i in {1..5}
+do
+  echo "IterationL $i"
+  time ./analysis -F ./input/ -D ./output
+  mv ./output/out.csv ./output/out-$i.csv
+  cp ./output/out-$i.csv ./input/nodes-intermediate.csv
+done
+
 time ./analysis -F ./input/ -D ./output
